@@ -1,0 +1,405 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.myChat:after {
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0px 0 10px 10px;
+    border-color: transparent transparent transparent #e1ffc7;
+    top: 0px;
+    right: -10px !important;
+}
+
+.myChat {
+    background: #e1ffc7 !important;
+    border-radius: 5px 0px 5px 5px;
+    position: relative;
+}
+
+.otherChat {
+    background: #fff;
+    border-radius: 0px 5px 5px 5px;
+    position: relative;
+}
+
+.otherChat:after {
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0px 10px 10px 0px;
+    border-color: transparent #fff transparent transparent;
+    top: 0;
+    left: -10px !important;
+}
+
+.app {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    background-color: #fff;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+
+}
+
+.app>.screen {
+    display: none;
+}
+
+.app>.screen.active {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.screen .form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+}
+
+.screen .form-input {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.screen h2 {
+    margin-bottom: 20px;
+    font-size: 30px;
+    color: #111;
+    border-bottom: 4px solid #555;
+    padding: 5px 0px;
+    display: inline-block;
+}
+
+.screen .form-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.screen .form-input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #555;
+    font-size: 16px;
+}
+
+.screen .form-input button {
+    padding: 10px 20px;
+    background-color: #111;
+    color: #eee;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+    border: none;
+
+}
+
+.chat-screen .header {
+    background-color: #111;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.chat-screen .header .logo {
+    font-size: 18px;
+    color: #eee;
+    font-weight: 600;
+}
+
+.chat-screen .header button {
+    padding: 5px 20px;
+    border: 1px solid #eee;
+    background: transparent;
+    color: #eee;
+    font-size: 15px;
+    cursor: pointer;
+    outline: none;
+}
+
+
+.chat-screen .messages {
+    width: 100%;
+    height: calc(100% - 100px);
+    background: #f5f5f5;
+    overflow-y: scroll;
+    /* background-image: url(./wb.jpg);
+    background-size: cover;
+    background-size: 100% 100%;
+    background-repeat: no-repeat; */
+}
+
+
+
+.chat-screen .messages .message {
+    display: flex;
+    padding: 10px;
+
+}
+
+.chat-screen .messages .message>div {
+    padding: 10px;
+    max-width: 80%;
+    background: #fff;
+    box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.05);
+}
+
+.chat-screen .messages .message.my-message {
+    justify-content: flex-end;
+}
+
+.chat-screen .messages .message.other-message {
+    justify-content: flex-start;
+}
+
+
+.message.my-messgae {
+    justify-content: end;
+}
+
+.chat-screen .messages .message .name {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+
+
+
+.chat-screen .messages .message .text {
+    word-wrap: break-word;
+}
+
+.chat-screen .messages .update {
+    text-align: center;
+    padding: 10px;
+    font-style: italic;
+}
+
+/* 
+.chat-screen .typebox {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    position: relative;
+} */
+
+
+.chat-screen .typebox {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    position: relative;
+    align-items: center;
+    right: 10px;
+}
+
+
+.chat-screen .typebox input {
+    flex: 1;
+    height: 50px;
+    font-size: 18px;
+    padding: 0 30px;
+    border: none;
+
+}
+
+.chat-screen .typebox input:focus-visible {
+    outline: unset !important;
+}
+
+/* .chat-screen .typebox button {
+    width: 15%;
+    height: 100%;
+    font-size: 16px;
+    background: #111;
+    color: #eee;
+    outline: none;
+    border: none;
+    cursor: pointer;
+
+} */
+
+.chat-screen .typebox button {
+    width: 33px;
+    height: 33px;
+    font-size: 14px;
+    background: #53c25e;
+    color: #eee;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+#fileUpload {
+    position: absolute;
+    right: 17%;
+    top: 14px;
+}
+
+.fa-cloud-upload:before {
+    content: "\f0ee";
+    font-size: 25px;
+}
+
+.fileImage {
+    width: 150px;
+    height: 137px;
+    float: right;
+}
+
+.fileImage1 {
+    width: 150px;
+    height: 137px;
+    float: left;
+}
+
+
+
+.fileImage img {
+    width: 100%;
+    height: 100%;
+}
+
+/* 
+#uploadImage {
+    cursor: pointer;
+    padding: 0 20px;
+    position: absolute;
+    right: 15%;
+    top: 27%;
+} */
+
+#uploadImage {
+    cursor: pointer;
+    padding: 0 20px;
+    position: absolute;
+    right: 9%;
+    top: 27%;
+}
+
+.file-input__input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+/* .file-input__label {
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    font-size: 14px;
+    padding: 7px 7px;
+    background-color: #000000;
+    box-shadow: 0px 0px 2px rgb(0 0 0 / 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 26px;
+    height: 25px;
+} */
+
+.file-input__label {
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    color: green;
+    font-size: 14px;
+    padding: 7px 7px;
+    background-color: #2cb97b00;
+    /* box-shadow: 0px 0px 2px rgb(0 0 0 / 25%); */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 25px;
+}
+
+.file-input__label svg {
+    height: 15px;
+    margin-right: 0px;
+}
+
+
+.message.my-messgae.file {
+    display: block;
+    width: fit-content;
+}
+
+
+.Uploadfile .name {
+    font-size: 16px !important;
+    text-align: start;
+    margin: 0;
+}
+
+.message.my-message .Uploadfile {
+    background: #e1ffc7 !important;
+    border-radius: 5px 0px 5px 5px;
+}
+
+.message.my-messgae .Uploadfile {
+    background: #e1ffc7 !important;
+    border-radius: 5px 0px 5px 5px;
+}
+
+.message.other-message .Uploadfile {
+    background: #fff !important;
+    border-radius: 0px 5px 5px 5px;
+}
+
+/* @media only screen and (max-width: 600px) and (min-width: 400px)  {...} */
+
+@media only screen and (max-width: 480px) {
+    .Uploadfile video {
+        width: 200px !important;
+        height: 125px !important;
+    }
+
+    .chat-screen .typebox input{
+        font-size: 12px ;
+    }
+}
+
+
+.Uploadfile audio {
+    width: 219px;
+}
+
+
+.Uploadfile img {
+    width: 200px;
+    height: 200px;
+}

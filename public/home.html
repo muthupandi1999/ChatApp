@@ -1,0 +1,492 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Quick Chat</title>
+	<link rel="stylesheet" href="./app.css">
+</head> -->
+<!-- 
+<body>
+
+	<form id="chat-form">
+		<input type="text" id="sender" name="sender" placeholder="Your name">
+		<input type="text" id="receiver" name="receiver" placeholder="Recipient name">
+		<input type="text" id="message" name="message" placeholder="Message">
+
+		<div id="messages"></div>
+		<button type="submit">Submit form</button>
+	</form> -->
+<!-- <div id="appContainer" class="flex-column">
+
+		<header>
+			<div class="container flex-column flex-center">
+				<h1>Quick Chat</h1>
+				<p class="light-text">The easiest way to get your message across.</p>
+			</div>
+		</header>
+
+		<div id="mainContent" class="container flex-grow-1 flex-column ">
+
+			<section id="login" class="">
+				<h2 class="text-center">Get Started</h2>
+				<form id="loginForm" class="flex">
+					<input type="text" name="username " id="usernameInput" placeholder="username" class="flex-grow-1">
+					<button id="loginBtn">Chat!</button>
+				</form>
+			</section>
+
+			<section id="chat" class="flex-grow-1 flex-column hidden">
+				<div id="messagesList" class="flex-grow-1">
+
+				</div>
+				<form id="messageForm" class="flex">
+					<input type="text" name="message " id="messageInput" class="flex-grow-1">
+					<button id="sendBtn">Send</button>
+				</form>
+			</section>
+
+
+
+		</div>
+	</div> -->
+
+<!-- <script src="/socket.io/socket.io.js"></script>
+
+	<script src="./app.js"></script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <!-- <h1>This is Html</h1> -->
+    <img src="" alt="">
+    <div class="app">
+        <!-- <div class="screen join-screen active">
+            <div class="form">
+                <h2>Join Chatroom</h2>
+                <div class="form-input">
+                    <label for="username">Username</label>
+                    <input type="text" id="username">
+
+      
+                   
+
+                </div>
+                <div class="form-input">
+                    <button id="join-user">Join</button>
+                </div>
+            </div>
+        </div> -->
+        <div class="screen chat-screen active">
+            <div class="header">
+                <div class="logo">Chatroom</div>
+                <button id="exit-chat">Exit</button>
+            </div>
+            <div class="messages">
+                <!-- <div class="message my-message">
+                    <div>
+                        <div class="name">you</div>
+                        <div class="text">hi</div>
+                    </div>
+                </div> -->
+                <div class="update"></div>
+                <!-- <div class="message other-message">
+                    <div>
+                        <div class="name">abc</div>
+                        <div class="text">hi</div>
+                    </div>
+                </div> -->
+            </div>
+            <div class="typebox">
+                <input type="text" id="message-input">
+                <button id="send-message"><i class="fa fa-forward" aria-hidden="true"></i></button>
+                <!-- <div id="fileUpload">
+                    <input type="file" onchange="upload(this.files)" />
+                    <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                </div> -->
+                <div id="uploadImage" class="file-input">
+
+                    <input type="file" name="file-input" id="file-input" class="file-input__input">
+
+                    <label class="file-input__label" for="file-input">
+
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="upload"
+                            class="svg-inline--fa fa-upload fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512">
+                            <path fill="currentColor"
+                                d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z">
+                            </path>
+                        </svg>
+
+                    </label>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+
+    <script>
+        const app = document.querySelector('.app');
+
+        const fileUpload = document.getElementById('fileUpload');
+        const socket = io();
+
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop),
+        });
+        // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+        var uname = params.username;
+
+        // console.log("Value", value)
+
+        // var uname = query.username;
+
+        // socket.addEventListener('open', () => {
+        // 	socket.send(JSON.stringify({ type: 'get_username' }));
+        // });
+
+        socket.emit("newuser", uname);
+
+        // app.querySelector('.join-screen #join-user').addEventListener('click', function () {
+        // 	let username = app.querySelector('.join-screen #username').value;
+
+        // 	if (username.length == 0) {
+        // 		return;
+        // 	}
+
+
+
+        // 	uname = username;
+
+        // 	// app.querySelector('.join-screen').classList.remove('active');
+
+        // 	// app.querySelector('.chat-screen').classList.add('active');
+
+        // })
+
+        app.querySelector('.chat-screen #send-message').addEventListener('click', function () {
+            console.log("uname", uname)
+            let message = app.querySelector('.chat-screen #message-input').value;
+
+            if (message.length == 0) {
+                return;
+            }
+
+            renderMessage("my", {
+                username: uname,
+                text: message
+            });
+
+            socket.emit("chat", {
+                username: uname,
+                text: message
+            });
+
+            app.querySelector('.chat-screen #message-input').value = "";
+        })
+
+        app.querySelector('.chat-screen #exit-chat').addEventListener('click', function () {
+            console.log("hloooo")
+            socket.emit('exituser', uname);
+
+            window.location.href = 'http://localhost:4000/'
+        })
+
+        socket.on('update', function (update) {
+            renderMessage('update', update)
+        })
+
+        socket.on('chat', function (message) {
+            renderMessage('other', message)
+        })
+
+
+
+        // socket.on('base64 file', function ({ file }) {
+        //     renderMessage("my", {
+        //         file
+        //     });
+
+        //     renderMessage('other', { file })
+        // })
+
+        var fileUp = document.getElementById('file-input');
+
+        var messageContainer = app.querySelector('.chat-screen .messages');
+
+        var msg = {}
+
+        //Attach the event listener to the element
+        fileUp.addEventListener('change', (event) => {
+            //Write the definition of your function
+            //It will be executed when change event will be fired
+            var data = event.target.files[0];
+            readThenSendFile(data);
+
+            console.log("msg", msg)
+
+            // renderMessage('my', msg.file);
+
+
+
+
+
+
+
+
+        });
+
+
+
+
+        // $('#uploadfile').bind('change', function (e) {
+        //     var data = e.originalEvent.target.files[0];
+        //     readThenSendFile(data);
+        // });
+
+        function readThenSendFile(data) {
+
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+
+                // msg.username = username;
+                msg.file = evt.target.result;
+                msg.fileName = data.name;
+
+                msg.username = uname;
+
+                var extension = msg.file.split(';')[0].split('/')[1];
+
+                console.log("exten", extension)
+
+                let elImg = document.createElement('div');
+
+
+
+                elImg.setAttribute('class', 'message my-messgae');
+
+                elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+                     <img src="${msg.file}" alt="img"></div>`
+
+    //             if (extension == "jpg" || "png" || "jpeg") {
+    //                 console.log("hloo")
+    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+    //                 <img src="${msg.file}" alt="img"></div>`
+    //             }
+
+    //             if (extension === "mp4") {
+    //                 console.log("hiii")
+    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+    //             <video width="320" height="180" controls>
+    //     <source src="${msg.file}" type="video/mp4">
+
+
+    // </video></div>`
+    //             }
+
+    //             if (extension === "mpeg") {
+    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+    //             <audio  controls>
+    //     <source src="${msg.file}" type="audio/mpeg">
+
+
+    // </audio></div>`
+    //             }
+
+
+                // elImg.innerHTML = `<img src="${message}" alt="img">`
+
+
+                messageContainer.appendChild(elImg);
+                socket.emit('base64 file', msg);
+
+
+
+
+
+            };
+            reader.readAsDataURL(data);
+
+
+        }
+
+
+        socket.on('base64 file', (file) => {
+            // Display the file contents in the browser
+
+
+            var extension1 = file.split(';')[0].split('/')[1];
+
+
+            let elImg = document.createElement('div');
+
+            elImg.setAttribute('class', 'message other-messgae');
+
+            elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
+                    <img src="${file}" alt="img"></div>`
+
+    //         if (extension1 == "jpg" || "png" || "jpeg") {
+    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
+    //                 <img src="${file}" alt="img"></div>`
+    //         }
+
+    //         if (extension1 === "mp4") {
+    //             console.log("hiii")
+    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+    //             <video width="320" height="180" controls>
+    //     <source src="${file}" type="video/mp4">
+
+
+    // </video></div>`
+    //         }
+
+    //         if (extension1 === "mpeg") {
+    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+    //             <audio  controls>
+    //     <source src="${file}" type="audio/mpeg">
+
+
+    // </audio></div>`
+    //         }
+
+
+
+            //         // elImg.innerHTML = `<img src="${message}" alt="img">`
+            //         elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
+            //         <video width="320" height="180" controls>
+            //     <source src="${file}" type="video/mp4">
+
+
+            // </video></div>`
+
+            messageContainer.appendChild(elImg);
+
+            // const fileDisplay = document.querySelector('#file-display');
+            // fileDisplay.innerText = fileContents;
+        });
+
+
+
+
+        // socket.on('base64 file', function (data) {
+        //     // var file = new Blob([data], { type: 'application/octet-stream' });
+
+        //     console.log(data)
+        //     // url = URL.createObjectURL(file);
+        //     renderMessage('my', data);
+
+        //     socket.emit("file", data);
+
+        // });
+
+        // socket.on("file", function (data) {
+        //     renderMessage('other', data)
+        // });
+        function renderMessage(type, message) {
+
+
+
+            if (type == "my") {
+
+                let el = document.createElement('div');
+
+                el.setAttribute('class', 'message my-messgae');
+
+                el.innerHTML = `<div class="myChat"><div class="name">You</div><div class="text">${message.text}</div></div>`;
+
+                // let elImg = document.createElement('div');
+
+                // elImg.setAttribute('class', 'message my-messgae');
+
+                // // elImg.innerHTML = `<img src="${message}" alt="img">`
+                // elImg.innerHTML = `<video width="320" height="240" controls>
+                //     <source src="${message}" type="video/mp4">
+
+
+                // </video>`
+
+
+
+                messageContainer.appendChild(el);
+                // messageContainer.appendChild(elImg);
+
+            } else if (type == "other") {
+
+                let el = document.createElement('div');
+
+                el.setAttribute('class', 'message other-messgae');
+
+                el.innerHTML = `<div class="otherChat"><div class="name">${message.username}</div><div class="text">${message.text}</div></div>`;
+
+                //                 let elImg = document.createElement('div');
+
+                //                 elImg.setAttribute('class', 'message other-messgae');
+
+                //                 // elImg.innerHTML = `<img src="${message}" alt="img">`
+
+                //                 elImg.innerHTML = `<video width="320" height="240" controls>
+                //   <source src="${message}" type="video/mp4">
+
+
+                // </video>`
+                messageContainer.appendChild(el);
+                // messageContainer.appendChild(elImg);
+
+
+            } else if (type == "update") {
+
+                let el = document.createElement('div');
+
+                el.setAttribute('class', 'update');
+
+                el.innerText = message;
+
+                messageContainer.appendChild(el);
+
+            }
+
+            //scroll chat to end
+
+            messageContainer.scrollTop = messageContainer.scrollHeight - messageContainer.clientHeight;
+
+            console.log("height", messageContainer.scrollTop)
+
+        }
+
+        //Upload
+
+        // function upload(files) {
+        //     socket.emit("upload", files[0], (status) => {
+        //         readThenSendFile(status);
+        //     });
+        // }
+
+
+
+    </script>
+
+</body>
+
+</html>
