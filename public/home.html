@@ -147,17 +147,77 @@
 
     <script type="text/javascript" src="socket.io/socket.io.js"></script>
 
+    <!-- <script>
+        const socket = io();
+
+        // handle connect event
+        socket.on('connect', () => {
+            console.log(`Socket connected with ID ${socket.id}`);
+        });
+
+        // handle disconnect event
+        socket.on('disconnect', () => {
+            console.log(`Socket disconnected`);
+        });
+    </script> -->
+
+
+
     <script>
+
+
+        var clients = [];
         const app = document.querySelector('.app');
 
-        const fileUpload = document.getElementById('fileUpload');
-        const socket = io();
+        console.log("App", app.querySelector('.chat-screen .typebox').childNodes[3])
 
         const params = new Proxy(new URLSearchParams(window.location.search), {
             get: (searchParams, prop) => searchParams.get(prop),
         });
         // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
         var uname = params.username;
+
+
+
+        // console.log("activeUsers", activeUsers)
+
+        const fileUpload = document.getElementById('fileUpload');
+        let socket = io.connect('http://localhost:4000');
+        console.log(socket.id); // undefined
+        socket.on('connect', () => {
+
+
+
+            socket.emit('join', uname);
+
+            socket.on('socketInfo', (socketInfo) => {
+                console.log('Updated socketInfo:', socketInfo);
+
+                const socketList = document.createElement('ul');
+                socketInfo.forEach(({ id, username }) => {
+                    const socketItem = document.createElement('li');
+                    socketItem.textContent = `Socket ID: ${id}, Username: ${username}`;
+                    socketList.appendChild(socketItem);
+                });
+                document.body.appendChild(socketList);
+            });
+
+            console.log(socket.id); // an alphanumeric id...
+
+            let data = { name: uname, userId: socket.id };
+            console.log("data", data)
+            socket.emit('setSocketId', data);
+
+            socket.emit('login', { userId: socket.id });
+        });
+
+
+
+
+
+
+
+
 
         // console.log("Value", value)
 
@@ -186,7 +246,56 @@
 
         // })
 
-        app.querySelector('.chat-screen #send-message').addEventListener('click', function () {
+
+        // app.querySelector('.chat-screen #send-message').addEventListener('keypress', function () {
+        //     console.log("uname", uname)
+        //     let message = app.querySelector('.chat-screen #message-input').value;
+
+        //     if (message.length == 0) {
+        //         return;
+        //     }
+
+
+
+        // })
+
+        console.log("scoektid", socket.id)
+
+
+
+        if (app.querySelector('.chat-screen #message-input').addEventListener('keypress', function (event) {
+
+            if (event.keyCode == 13) {
+
+                let message = app.querySelector('.chat-screen #message-input').value;
+
+                if (message.length == 0) {
+                    return;
+                }
+
+                renderMessage("my", {
+                    username: uname,
+                    text: message
+                });
+
+                socket.emit("chat", {
+                    username: uname,
+                    text: message
+                });
+
+                app.querySelector('.chat-screen #message-input').value = "";
+            }
+
+        }))
+            var sendbtn = app.querySelector('.chat-screen #send-message');
+        console.log("sendbtn", sendbtn)
+
+        // sendbtn.addEventListener('click', () => {
+        //     console.log("hiiii")
+        // })
+
+
+        app.querySelector('.chat-screen .typebox').childNodes[3].addEventListener('click', function () {
             console.log("uname", uname)
             let message = app.querySelector('.chat-screen #message-input').value;
 
@@ -212,9 +321,18 @@
             socket.emit('exituser', uname);
 
             window.location.href = 'http://localhost:4000/'
+
+            activeUsers.forEach(function (item, index, object) {
+                if (item == uname) {
+                    object.splice(index, 1);
+                }
+            });
+
+
         })
 
         socket.on('update', function (update) {
+            console.log("update", update)
             renderMessage('update', update)
         })
 
@@ -290,30 +408,30 @@
                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
                      <img src="${msg.file}" alt="img"></div>`
 
-    //             if (extension == "jpg" || "png" || "jpeg") {
-    //                 console.log("hloo")
-    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
-    //                 <img src="${msg.file}" alt="img"></div>`
-    //             }
+                //             if (extension == "jpg" || "png" || "jpeg") {
+                //                 console.log("hloo")
+                //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+                //                 <img src="${msg.file}" alt="img"></div>`
+                //             }
 
-    //             if (extension === "mp4") {
-    //                 console.log("hiii")
-    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
-    //             <video width="320" height="180" controls>
-    //     <source src="${msg.file}" type="video/mp4">
-
-
-    // </video></div>`
-    //             }
-
-    //             if (extension === "mpeg") {
-    //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
-    //             <audio  controls>
-    //     <source src="${msg.file}" type="audio/mpeg">
+                //             if (extension === "mp4") {
+                //                 console.log("hiii")
+                //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+                //             <video width="320" height="180" controls>
+                //     <source src="${msg.file}" type="video/mp4">
 
 
-    // </audio></div>`
-    //             }
+                // </video></div>`
+                //             }
+
+                //             if (extension === "mpeg") {
+                //                 elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+                //             <audio  controls>
+                //     <source src="${msg.file}" type="audio/mpeg">
+
+
+                // </audio></div>`
+                //             }
 
 
                 // elImg.innerHTML = `<img src="${message}" alt="img">`
@@ -347,29 +465,29 @@
             elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
                     <img src="${file}" alt="img"></div>`
 
-    //         if (extension1 == "jpg" || "png" || "jpeg") {
-    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
-    //                 <img src="${file}" alt="img"></div>`
-    //         }
+            //         if (extension1 == "jpg" || "png" || "jpeg") {
+            //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">${uname}</div>
+            //                 <img src="${file}" alt="img"></div>`
+            //         }
 
-    //         if (extension1 === "mp4") {
-    //             console.log("hiii")
-    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
-    //             <video width="320" height="180" controls>
-    //     <source src="${file}" type="video/mp4">
-
-
-    // </video></div>`
-    //         }
-
-    //         if (extension1 === "mpeg") {
-    //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
-    //             <audio  controls>
-    //     <source src="${file}" type="audio/mpeg">
+            //         if (extension1 === "mp4") {
+            //             console.log("hiii")
+            //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+            //             <video width="320" height="180" controls>
+            //     <source src="${file}" type="video/mp4">
 
 
-    // </audio></div>`
-    //         }
+            // </video></div>`
+            //         }
+
+            //         if (extension1 === "mpeg") {
+            //             elImg.innerHTML = `<div class="Uploadfile"><div class="name">You</div>
+            //             <audio  controls>
+            //     <source src="${file}" type="audio/mpeg">
+
+
+            // </audio></div>`
+            //         }
 
 
 

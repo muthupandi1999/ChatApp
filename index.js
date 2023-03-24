@@ -1,11 +1,14 @@
 // const http = require("http");
 const express = require("express");
+
 const logger = require("morgan");
+
 const cors = require("cors");
 
-
 const app = express();
+
 const path = require('path')
+
 const http = require('http');
 
 const { writeFile } = require("fs");
@@ -27,39 +30,26 @@ const User = require('./models/User');
 // mongo connection
 
 const mongoose = require("mongoose");
-// socket configuration
-// import WebSockets from "./server/utils/WebSockets";
-
-// const WebSockets = require('./server/utils/WebSockets')
-// const indexRouter = require('./server/utils/WebSockets')
-// const userRouter = require('./server/utils/WebSockets')
-// const chatRoomRouter = require('./server/utils/WebSockets')
-// routes
-// import indexRouter from "./server/routes/index";
-// const userRouter = require("./routes/User");
-
-// const loginRouter = require('./routes/login');
-
-// const chatRoomRouter = require('./routes/room');
-
-// const messageRouter = require('./routes/message')
 
 const { decode } = require('./middlewares/jwt');
 
-const Message = require('./models/messageSchema')
+const Message = require('./models/messageSchema');
+
+const uuid = require('uuid');
 
 /** Get port from environment and store in Express. */
 const port = process.env.PORT || "4000";
+
 app.set("port", port);
 
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: false }));
 
 //Serve public directory
 app.use(express.static('public'));
-
 
 // app.get('/', (req, res) => {
 //     res.sendFile(__dirname + '/public/login.html');
@@ -76,21 +66,8 @@ app.get('/register', (req, res) => {
     res.sendFile(__dirname + '/public/register.html');
 });
 
-// app.use(myMiddleware);
-
-// app.use("/login", loginRouter);
-// app.use("/users", userRouter);
-// app.use("/room", decode, chatRoomRouter);
-// app.use("/message", decode, messageRouter);
-// app.use("/delete", deleteRouter);
 
 mongoose.set('strictQuery', false)
-
-// mongoose.connect('mongodb://localhost:27017/Chat-Socket', err => {
-//     if(err)   console.log("DB is not connected")
-//     console.log("DB is connected")
-// })
-
 
 mongoose.connect('mongodb://localhost:27017/ChatApp-Socket', {
     useNewUrlParser: true,
@@ -119,65 +96,159 @@ app.use('*', (req, res) => {
     })
 });
 
+const users = {};
+
+const clients = [];
+
+// console.log("clients", clients)
+// console.log("activeusers", users)
+
 io.on('connection', (socket) => {
 
-    console.log("id", socket.id);
 
-    socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err.message}`);
+    var socketInfo = [];
+
+    socket.on('join', (username) => {
+        console.log(`${username} joined`);
+        socket.username = username;
+        socketInfo.push({ id: socket.id, username });
+
+        socket.emit('socketInfo', socketInfo)
     });
-    console.log('a user connected');
 
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
 
-    // socket.on('message', message => {
-    //     console.log('message: ' + message);
-    //     //Broadcast the message to everyone
-    //     io.emit('message', message);
+    // function generateUsername() {
+    //     return `user_${uuid.v4()}`;
+    // }
+
+    // var socketInfo;
+
+
+    // socket.on('login', function (data) {
+
+    //     socket.username = generateUsername();
+
+    //     // send the socket ID and username to the client
+    //     socket.emit('socket info', { id: socket.id, username: socket.username });
+
+    //     // get a list of all connected sockets and their info
+
+    //     const socketIds = [...io.sockets.sockets.keys()];
+
+    //     console.log("activeId", socketIds);
+
+    //     socketInfo = socketIds.map((id) => {
+    //         const socket = io.sockets.sockets.get(id);
+    //         const username = socket.username; // assuming username is a property of the socket object
+    //         return { id, username };
+    //     });
+
+    //     // const socketInfo = socketIds.map((s) => ({
+    //     //     id: s.id,
+    //     //     username: s.username
+    //     // }));
+
+
+    //     // send the list of socket info to the client
+    //     socket.emit('all sockets', socketInfo);
+
+    //     // console.log('a user ' + data.userId + ' connected');
+
+    //     // saving userId to object with socket ID
+    //     users.socketId = data.userId;
+
+    //     clients.push(data.userId)
+
+    //     // console.log("clientdt", clients)
+
+    //     // console.log("users", users)
+
     // });
 
-    socket.on('chat message', (data) => {
-        const message = new ChatMessage({
-            sender: data.sender,
-            receiver: data.receiver,
-            message: data.message,
-        });
 
-        message.save()
-            .then(data => {
-                io.emit('chat message', data);
-            })
-            .catch(err => {
-                console.error(err);
-            });
+
+    // console.log(" socket.join(socket.userID);", socket.join(socket.userID));
+
+    var userNames = {};
+
+    socket.on('setSocketId', (data) => {
+
+        // console.log("data", data);
+
+        var userName = data.name;
+
+        var userId = data.userId;
+
+        userNames.userName = userName;
+
+        userNames.userId = userId;
+
+        // console.log("user", userNames)
+
 
     });
+
+    // console.log("username", userNames)
+
+    // console.log("id", socket.id);
+
+    socket.on("connect_error", (err) => {
+
+        console.log(`connect_error due to ${err.message}`);
+
+    });
+
+
+    // socket.on('chat message', (data) => {
+    //     const message = new ChatMessage({
+    //         sender: data.sender,
+    //         receiver: data.receiver,
+    //         message: data.message,
+    //     });
+
+    //     message.save()
+    //         .then(data => {
+    //             io.emit('chat message', data);
+
+    //         })
+    //         .catch(err => {
+    //             console.error(err);
+    //         });
+
+    // });
 
     socket.on('register', async (data) => {
 
-        console.log("data", data)
+        // console.log("data", data)
+
         const { username, email, password } = data;
 
         const hashPassword = await bcrypt.hashSync(password, 10)
+
         const user = await new User({
             username: username,
             email: email,
             password: hashPassword
         });
+
         try {
-            console.log("saved", user)
+
+            // console.log("saved", user)
             await user.save();
             socket.emit('register success');
+
         } catch (error) {
+
             socket.emit('register failure');
+
         }
+
     });
 
     socket.on('login', async (data) => {
 
-        console.log("data", data)
+        // console.log("data", data)
+
         const { email, password } = data;
 
         const emailExists = await User.findOne({ email: email });
@@ -188,16 +259,7 @@ io.on('connection', (socket) => {
 
             if (validPassword) {
 
-                // var userName = emailExists.username
-
                 socket.emit('login success');
-
-                // const response = JSON.stringify({ type: 'username', userName });
-                // socket.send(response);
-
-
-
-                // socket.emit('UserDt', userName)
 
                 var distination = `/home.html?username=${emailExists.username}`;
 
@@ -206,8 +268,6 @@ io.on('connection', (socket) => {
                 // socket.emit('user dt', emailExists);
 
                 socket.emit('redirect', distination);
-
-
 
             } else {
 
@@ -222,16 +282,18 @@ io.on('connection', (socket) => {
 
     });
 
-
-
-
     socket.on('newuser', function (uname) {
+
         username = uname;
+
         socket.broadcast.emit('update', uname + " Joined the conversation");
+
     })
 
     socket.on('exituser', function (uname) {
+
         socket.broadcast.emit('update', uname + " left the conversation");
+
     })
 
     socket.on('chat', async function (message) {
@@ -242,41 +304,28 @@ io.on('connection', (socket) => {
             sender: message.username
 
         });
+
+        // console.log("ActiveUsers", users)
+
         try {
+
             // console.log("saved", message)
             await message_.save();
 
         } catch (error) {
-            throw err
-        }
 
+            throw err
+
+        }
 
         socket.broadcast.emit('chat', message)
     })
 
-
-
-    //Upload
-
-
-    // socket.on("upload", (file, callback) => {
-    //     console.log(file); // <Buffer 25 50 44 ...>
-
-    //     // save the content to the disk, for example
-    //     writeFile("public/upload.png", file, (err) => {
-    //         callback({ message: err ? "failure" : "success" });
-    //     });
-    // });
-
     socket.on('base64 file', async (msg) => {
 
-        console.log("msg", msg)
-        console.log("msg.fileName", msg.fileName)
-        // Emit the file contents to all clients
+        // console.log("msg", msg)
 
-        // let extension = msg.file.split(';')[0].split('/')[1]
-
-        // socket.emit('base64 file', msg.file);
+        // console.log("msg.fileName", msg.fileName)
 
         const buffer = Buffer.from(msg.file, 'base64');
 
@@ -285,7 +334,7 @@ io.on('connection', (socket) => {
             if (err) {
                 console.log(err)
             }
-            console.log("success")
+            // console.log("success")
 
 
         });
@@ -295,7 +344,7 @@ io.on('connection', (socket) => {
             file: msg.fileName
         })
 
-        console.log("Chats", chats_)
+        // console.log("Chats", chats_)
 
         try {
             // console.log("saved", message)
@@ -309,39 +358,11 @@ io.on('connection', (socket) => {
 
         await socket.broadcast.emit('base64 file', msg.file);
 
-
-
-
-
-        // socket.broadcast.emit('base64 file', msg.file);
-
     });
-
-    // socket.on('base64 file', function (msg) {
-    //     console.log("msg", msg)
-    //     // console.log('received base64 file from' + msg.username);
-    //     // socket.username = msg.username;
-    //     // socket.broadcast.emit('base64 image', //exclude sender
-    //     // io.sockets.emit('base64 file',  //include sender
-
-    //     //     {
-    //     //       file: msg.file,
-    //     //       fileName: msg.fileName
-    //     //     }
-
-    //     // );
-
-
-    //     // socket.broadcast.emit('base64 file', msg.file)
-
-    //     io.sockets.emit('base64 file',  msg.file); //include sender
-    // });
 
 });
 
-
 /** Create HTTP server. */
-
 
 /** Create socket connection */
 // global.io = socketio.listen(server);
